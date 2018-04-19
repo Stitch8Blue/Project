@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>สินค้า</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script type="text/javascript" src="modifly.js"></script>
+    </head>
+    <body>
+        <?php
+            include("connect.php");
+            
+            $sql = "SELECT * FROM product";
+            $query = mysqli_query($conn,$sql);
+        ?>
+           <table border=1 id="pro_table" width="80%">
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ประเภทสินค้า</th>
+                        <th>ชื่อสินค้า</th>
+                        <!--<th>รายละเอียดสินค้า</th>
+                        <th>ราคาสินค้า</th>
+				        <th>จำนวนสินค้า</th>
+				        <th>ส่วนลด(%)</th>
+				        <th>รูปภาพ</th>
+				        <th>หมายเหตุ</th>-->
+                    </tr>
+        <?php
+            while($row = mysqli_fetch_array($query,MYSQLI_ASSOC)){
+        ?>
+                <tr id="row<?php echo $row['pro_id'];?>">
+                    <td id="pro_id_val<?php echo $row['pro_id'];?>"><?php echo $row['pro_id'];?></td>
+                    <td id="pro_type_val<?php echo $row['pro_id'];?>"><?php echo $row['pro_type'];?></td>
+                    <td id="pro_name_val<?php echo $row['pro_id'];?>"><?php echo $row['pro_name'];?></td>
+                    <td>
+                        <input type="button" class="edit_button" id="edit_button<?php echo $row['pro_id'];?>" value="แก้ไข" onclick="edit_row('<?php echo $row['pro_id'];?>');">
+                        <input type="button" class="save_button" id="save_button<?php echo $row['pro_id'];?>" value="บันทึก" onclick="save_row('<?php echo $row['pro_id'];?>');">
+                        <input type="button" class="delete_button" id="delete_button<?php echo $row['pro_id'];?>" value="ลบ" onclick="delete_row('<?php echo $row['pro_id'];?>')">
+                    </td> 
+                </tr>
+        <?php
+            }
+        ?>
+                <tr id="new_row">
+                    <td></td>
+                    <td><input type="text" id="new_pro_type"></td>
+                    <td><input type="text" id="new_pro_name"></td>
+                    <td>
+                        <input type="button" value="เพิ่ม" onclick="insert_row();">                    
+                    </td>
+                </tr>
+            </table>
+        <?php
+            if(isset($_POST['edit_row'])){
+                 $row = $_POST['row_id'];
+                 $pro_type_val = $_POST['pro_type_val'];
+                 $pro_name_val = $_POST['pro_name_val'];
+
+                 mysqli_query($conn,"UPDATE product SET pro_type='".$pro_type_val."',pro_name='".$pro_name_val."' where pro_id='".$row."'");
+                 echo "success";
+                 exit();
+            }    
+
+            if(isset($_POST['delete_row'])){
+                $pro_id = $_POST['row_id'];
+                $sql_delete = "DELETE FROM product WHERE pro_id = '".$pro_id."'";
+                $query_delete = mysqli_query($conn,$sql_delete);
+                echo "success";
+                exit();
+            }
+        
+            if(isset($_POST['insert_row'])){
+                 $pro_type = $_POST['pro_type'];
+                 $pro_name = $_POST['pro_name'];
+                 $sql_add = "INSERT INTO product(pro_id, pro_type, pro_name) VALUES('','".$pro_type."','".$pro_name."')";
+                 mysqli_query($conn,$sql_add);
+                 echo mysqli_insert_id();
+                 exit();
+            }
+        ?>
+    </body>
+</html>
